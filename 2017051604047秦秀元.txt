@@ -1,0 +1,128 @@
+1.
+create database xkgl
+on primary (
+name ='xgkl_data',
+filename='c:\xkgl_data.mdf',
+size=5mb,
+maxsize=100mb,
+filegrowth=15%,)
+logn on(
+name='xkgl_data',
+filename='c:\xkgl_log.ldf',
+size=2mb,
+filegrowth=1mb);
+
+use database xkgl;
+create table student
+(
+s# char(5) primary key,
+sname char(20),
+age smallint,
+sex char(2),
+dept varchar(30),
+);
+
+create table course
+(
+c# char(5) primary key,
+cname char(30),
+teacher char(20),
+);
+
+create table sc
+(
+s# char(5),
+c# char(5),
+grade smallint,
+primary key(c#,s#),
+foreign key(c#) references course(c#),
+foreign key(s#) references student(s#),
+);
+
+2.
+use xkgl;
+insert into student(s#,sname,sex,age,dept)
+(values('95001','李勇','男',20,'计算机'),
+	('95002','刘晨','女',19,'计算机'),
+	('95003','王敏','女',18,'数学'),
+	('95004','张立','男',19,'化学'),
+);
+insert into course(c#,cname,teacher)
+(values('c1','数据库','张清玫'),
+	('c2','数学','刘逸'),
+	('c3','信息系统','丁宝康'),
+	('c4','操作系统','孙钟秀'),
+	('c5','数据结构','殷人昆'),
+	('c6','数据处理','王珊'),
+	('c7','pascal语言','施伯乐'),
+);
+
+insert into sc(s#,c#,grade)
+(values('95001','c1',92),
+('95001','c2',85),
+('95001','c3',88),
+('95002','c2',90),
+('95002','c3',80),
+);
+3.
+use xkgl;
+(1)
+select sname,2018-age,lower(dept)
+ from student ;
+(2)
+select distinct s#
+from sc
+(3)
+select sname,dept,age
+from student
+where age<=20 or age >=23; 
+(4)
+select sname,age,dept
+from student
+where sname like"王%";
+(5)
+select cname,sname,grade
+from student as s,course as c,sc
+where s.s#=sc.s#
+and c.c#=sc.c#
+and grade>85;
+(6)
+select c#,grade
+from sc,student as s
+where sc.s#=s.s#
+and sname="李勇"
+order by grade;
+(7)
+select c#,s#
+from course as c,sc
+group by s#
+having c.c#=sc.c#;
+(8)
+select cname
+from student as s,course as c,sc
+where s.s#=sc.s#
+and c.s#=sc.c#
+and sname="李勇"
+and grade=max(grade);
+(9)
+update sc
+set grade=grade+3
+from sc,student as s
+where s.s#=sc.s#
+and sname="刘晨";
+(10)
+create user zhang
+for login
+with default_schema=[dbo];
+
+grant update(grade)
+on sc
+to zhang;
+
+
+
+
+
+
+
+
